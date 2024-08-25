@@ -7,7 +7,8 @@ select
     case when random() > 0.3 then substring(md5(random()::text)::text, 0, (random() * 5 + 4)::int) || '@' || substring(md5(random()::text)::text, 0, (random() * 5 + 4)::int) || '.com' end as email,
     now() - interval '1 microsecond' * 1e14 * random() as registered_at,
     random() > 0.95 as disabled
-from generate_series(1, 1e7::int);
+-- здесь можно указать количество генерируемых пользователей чтобы проверить работу на разных объемах данных
+from generate_series(1, 1e5::int);
 
 insert into player_session (player_id, mode_id, started_at, finished_at, score, rating_points)
 
@@ -124,3 +125,7 @@ set
     r_count = excluded.r_count,
     r_count_win = excluded.r_count_win
 ;
+
+select count(*) from player_rating
+select count(*) from player_metric
+select count(*) from player

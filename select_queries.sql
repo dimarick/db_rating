@@ -1,6 +1,10 @@
 -- Проще всего получить верхушку рейтинга
 -- Запросы к player_metric и player_rating работают одинаково хорошо, поэтому источник выбираем по оперативности обновления
-select * from public.player_metric m where mode_id = 1 and m.disabled = false order by max_score limit 1000;
+select *
+from public.player_metric m
+where m.mode_id = 1 and m.disabled = false
+-- здесь любое поле по которому строится топ
+order by max_score limit 1000;
 
 -- Наивное решение: используем оконные функции. Решение работает очень медленно, так как каждый раз рейтинг строится заново
 explain analyse
@@ -88,7 +92,10 @@ from (
 -- Решение применимо к практически любому мыслимому объему данных, вопрос только в скорости обновления таблицы player_rating
 explain analyse
 with player_metric_summary as(
-    select m3.id as mode_id, (select r_max_score from player_rating r4 where r4.mode_id = m3.id order by r4.mode_id, r4.r_max_score desc limit 1) as count from game_mode m3
+    select
+        m3.id as mode_id,
+        (select r_max_score from player_rating r4 where r4.mode_id = m3.id order by r4.mode_id, r4.r_max_score desc limit 1) as count
+    from game_mode m3
 )
 select
    r.player_id,
@@ -102,4 +109,4 @@ select
    r_count_win - (select count(*) from player_rating r2 where r2.mode_id = r.mode_id and r2.disabled and r2.r_count_win < r.r_count_win) as r_max_score
 from player_rating r
 inner join player_metric_summary s on s.mode_id = r.mode_id
-where player_id = (select id from player where email = '636600@32628.com')
+where player_id = (select id from player where email = '636600@32628.com');
