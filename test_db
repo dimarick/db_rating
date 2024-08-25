@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cat tests.sql | docker-compose run psql
+
+
