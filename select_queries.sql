@@ -22,7 +22,7 @@ select * from (
         disabled,
        row_number() over (partition by mode_id order by max_score desc, last_activity_at desc) as r_max_score,
        row_number() over (partition by mode_id order by sum_score desc, last_activity_at desc) as r_sum_score,
-       row_number() over (partition by mode_id order by min_duration asc, last_activity_at desc) as r_min_duration,
+       row_number() over (partition by mode_id order by min_duration, last_activity_at desc) as r_min_duration,
        row_number() over (partition by mode_id order by sum_rating_points desc, last_activity_at desc) as r_sum_rating_points,
        row_number() over (partition by mode_id order by count desc, last_activity_at desc) as r_count,
        row_number() over (partition by mode_id order by count_win desc, last_activity_at desc) as r_count_win
